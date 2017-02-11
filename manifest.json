@@ -1,0 +1,16 @@
+{
+  "name": "Steal Js",
+  "description": "For 1-st level websites",
+  "version": "2.0",
+  "permissions": [
+    "activeTab",
+    "contextMenus"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_action": {
+    "default_title": "Steal it!"
+  },
+  "manifest_version": 2
+}
