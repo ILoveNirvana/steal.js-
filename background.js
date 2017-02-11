@@ -1,14 +1,10 @@
 browser.contextMenus.create({
-  id: "title",
-  title: "Set Title"
-});
-browser.contextMenus.create({
   id: "start",
-  title: "Start Editing"
+  title: "Prepair"
 });
 browser.contextMenus.create({
-  id: "finish",
-  title: "Finish Editing"
+  id: "switch",
+  title: "Editing Mode ON/OFF"
 });
 
 browser.contextMenus.onClicked.addListener(function(info, tab) {
@@ -19,16 +15,9 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
   }
 });
 browser.contextMenus.onClicked.addListener(function(info, tab) {
-  if (info.menuItemId == "finish") {
+  if (info.menuItemId == "switch") {
     browser.tabs.executeScript({
-      code: "document.body.contentEditable='false'; document.designMode='off'; setBackgrounds();"
-    });
-  }
-});
-browser.contextMenus.onClicked.addListener(function(info, tab) {
-  if (info.menuItemId == "title") {
-    browser.tabs.executeScript({
-      code: "document.title = prompt('Enter Company Name');"
+      code: "switchEditionMode()"
     });
   }
 });
