@@ -6,6 +6,11 @@
     "activeTab",
     "contextMenus"
   ],
+  "content_scripts": [
+  {
+    "matches": ["<all_urls>"],
+    "js": ["FileSaver.min.js", "jszip.js", "main.js"]
+  }],
   "background": {
     "scripts": ["background.js"]
   },
