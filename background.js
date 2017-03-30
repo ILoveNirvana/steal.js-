@@ -1,18 +1,18 @@
 browser.contextMenus.create({
     id: "start",
-    title: "Prepair"
+    title: "Start"
 });
+// browser.contextMenus.create({
+//     id: "switch",
+//     title: "Editing Mode ON/OFF"
+// });
+// browser.contextMenus.create({
+//     id: "deleting",
+//     title: "Deleting Mode ON/OFF"
+// });
 browser.contextMenus.create({
-    id: "switch",
-    title: "Editing Mode ON/OFF"
-});
-browser.contextMenus.create({
-    id: "deleting",
-    title: "Deleting Mode ON/OFF"
-});
-browser.contextMenus.create({
-    id: "download",
-    title: "Download"
+    id: "end",
+    title: "Finish"
 });
 browser.contextMenus.onClicked.addListener(function(info, tab) {
     if (info.menuItemId == "start") {
@@ -30,9 +30,9 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
             code: "deletingElementsModeSwitcher()"
         });
     }
-    if (info.menuItemId == "download") {
+    if (info.menuItemId == "end") {
         browser.tabs.executeScript({
-            code: "download()"
+            code: "test()"
         });
     }
 });

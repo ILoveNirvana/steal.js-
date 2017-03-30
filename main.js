@@ -284,7 +284,9 @@ function getListOfBackgroundImages(
 
         var backgroundImage = window.getComputedStyle(elements[i]).getPropertyValue("background-image")
 
-        if (backgroundImage != 'none' && !backgroundImagesSources.includes(backgroundImage)) {
+        if ( backgroundImage != 'none' &&
+            !backgroundImagesSources.includes(backgroundImage) &&
+             backgroundImage.includes('url(') ) {
 
             var path = backgroundImage.slice(5, -2).split('/');
 
@@ -409,11 +411,31 @@ let state = {
 
 function prepair() {
     nodeWalk()
-    setNoIndex()
     createBackgroundsHack()
+    var tag = document.createElement("script");
+tag.src = "https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=uoqzmquvnisi5q4f02q2wrkoe47wmc5pvb04s3hz8pqz8c31";
+document.getElementsByTagName("head")[0].appendChild(tag);
+document.body.innerHTML = `<div id="edit-control-buttons" style="position: absolute; top: 10px; right: 10px; z-index: 65536"><button onclick="tinymce.init({
+  selector: '#edit-web',
+  inline: true,
+  theme: 'modern',
+  plugins: [
+    'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+    'searchreplace wordcount visualblocks visualchars code fullscreen',
+    'insertdatetime media nonbreaking save table contextmenu directionality',
+    'emoticons template paste textcolor colorpicker textpattern imagetools codesample toc'
+  ],
+  toolbar1: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+  toolbar2: 'print preview media | forecolor backcolor emoticons | codesample',
+  image_advtab: true,
+  templates: [
+    { title: 'Test template 1', content: 'Test 1' },
+    { title: 'Test template 2', content: 'Test 2' }
+  ]
+   });">Edit On</button><button onclick="tinymce.remove()">Edit OFF</button></div><div id="edit-web">` + document.body.innerHTML + "</div>";
     setForm()
-    switchBackgroundSources()
     rewriteTitle()
+    setNoIndex()
 }
 
 function enableTextEdit(element) {
@@ -424,7 +446,7 @@ function enableTextEdit(element) {
                 text = childNodes[i].nodeValue;
             element.replaceChild(newNode, childNodes[i]);
             newNode.innerText = text;
-            newNode.setAttribute('contenteditable', 'true');
+            //newNode.setAttribute('contenteditable', 'true');
         }
     }
     for (element of document.getElementsByTagName('EDITABLE')) {
@@ -461,12 +483,59 @@ const deleteItem = function(event) {
     if (state.proccesed) event.target.remove()
 }
 
+
 function download() {
-    var zip = new JSZip();
-    zip.file("index.html", document.documentElement.innerHTML);
-    var img = zip.folder("images");
+    let zip = new JSZip()
+    getStyleSheets(zip);
+    getImages(zip);
     zip.generateAsync({ type: "blob" })
         .then(function(content) {
             saveAs(content, "example.zip");
         })
-  }
+}
+
+function getStyleSheets(zip) {
+    const styles = document.styleSheets;
+    for (var i = styles.length - 1; i >= 0; i--) {
+        let path = styles[i].ownerNode.href || false;
+        if (path) {
+            let content = axios.get(path)
+                .then(function(response) {
+                    return response.data;
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
+            console.log(content);
+            zip.file('assets/css/' + path.slice(path.lastIndexOf('/') + 1, path.lastIndexOf('.css') + 4), content)
+        }
+    }
+    return zip;
+}
+
+function getImages(zip) {
+    const images = document.images;
+    for (var i = images.length - 1; i >= 0; i--) {
+        let path = images[i].currentSrc || false;
+        if (path) {
+            let content = axios.get(path, { responseType: 'arraybuffer' })
+                .then(function(response) {
+                    return response.data;
+                })
+                .catch(function(error) {
+                    console.log(error, path);
+                });
+            console.log(content);
+            zip.file('images/' + path.slice(path.lastIndexOf('/') + 1), content)
+        }
+    }
+    return zip;
+}
+
+function test() {
+    document.getElementById('edit-control-buttons').remove()
+    document.body.innerHTML += document.getElementById('edit-web').innerHTML
+    document.getElementById('edit-web').remove()
+    document.querySelector('script[src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=uoqzmquvnisi5q4f02q2wrkoe47wmc5pvb04s3hz8pqz8c31"]').remove()
+    switchBackgroundSources()
+}

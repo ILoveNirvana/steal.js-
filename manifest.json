@@ -9,7 +9,7 @@
   "content_scripts": [
   {
     "matches": ["<all_urls>"],
-    "js": ["FileSaver.min.js", "jszip.js", "main.js"]
+    "js": ["tinymce/tinymce.min.js", "FileSaver.min.js", "jszip.js", "axios.js", "main.js"]
   }],
   "background": {
     "scripts": ["background.js"]
